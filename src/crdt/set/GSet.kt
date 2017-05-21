@@ -9,40 +9,40 @@ import java.util.*
 /**
  * Grow-only set.
  */
-internal class GSet<T> : CRDTSet<T, GSet<T>> {
+internal class GSet<V> : CRDTSet<V, GSet<V>> {
 
-    private val set: MutableSet<T> = HashSet()
+    private val set: MutableSet<V> = HashSet()
 
     constructor() {
     }
 
-    private constructor(set: Set<T>) {
+    private constructor(set: MutableSet<V>) {
         this.set.addAll(set)
     }
 
 
-    fun add(x: T) {
+    override fun add(x: V) {
         set.add(x)
     }
 
-    fun addAll(elements: Collection<T>): Boolean {
+    override fun addAll(elements: Collection<V>): Boolean {
         return set.addAll(elements)
     }
 
-    fun contains(x: T): Boolean {
+    override fun contains(x: V): Boolean {
         return set.contains(x)
     }
 
 
-    override fun merge(other: GSet<T>) {
+    override fun merge(other: GSet<V>) {
         set.addAll(other.set)
     }
 
-    override fun value(): Set<T> {
-        return HashSet<T>(this.set)
+    override fun value(): MutableSet<V> {
+        return HashSet(this.set)
     }
 
-    override fun copy(): GSet<T> {
+    override fun copy(): GSet<V> {
         return GSet(this.set)
     }
 

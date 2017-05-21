@@ -1,6 +1,7 @@
 import crdt.counter.GCounter
 import crdt.counter.PNCounter
 import crdt.set.GSet
+import crdt.set.TwoPhaseSet
 
 /**
  * Created by jackqack on 20/05/17.
@@ -88,12 +89,41 @@ fun testGSet() {
 
     set1.merge(set2)
 
-    print(set1.value())
+    println(set1.value())
+}
+
+fun testTwoPhaseSet() {
+    val set1 = TwoPhaseSet<Int>()
+    set1.add(1)
+    set1.add(2)
+    set1.add(2)
+    set1.add(4)
+
+    val set2 = TwoPhaseSet<Int>()
+    set2.add(1)
+    set2.add(3)
+    set2.add(4)
+    set2.add(5)
+
+    set1.merge(set2)
+
+    set1.remove(2)
+
+    set2.add(2)
+
+
+    set2.merge(set1)
+    set2.addAll(listOf(2, 4, 5, 6))
+
+    println(set2.value())
 }
 
 
 fun main(args: Array<String>) {
 
-    testGSet()
+    testTwoPhaseSet()
 
 }
+
+
+
