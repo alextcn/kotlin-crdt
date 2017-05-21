@@ -1,15 +1,18 @@
 package crdt.counter
 
+import crdt.CRDT
 import java.util.*
 
 /**
  * Created by jackqack on 20/05/17.
  */
 
+/**
+ * Grow-only counter.
+ */
+internal class GCounter : CRDT<GCounter> {
 
-class GCounter {
-
-    val counts: MutableMap<String, Int> = HashMap()
+    private val counts: MutableMap<String, Int> = HashMap()
 
 
     /**
@@ -19,14 +22,16 @@ class GCounter {
         counts[key] = (counts[key] ?: 0) + 1
     }
 
-    /**
-     * Merge another CRDT into this one.
-     * Method must be idempotent, commutative and associative.
-     */
-    fun merge(other: GCounter) {
+    override fun merge(other: GCounter) {
         for ((key, value) in other.counts) {
             counts[key] = Math.max(counts[key] ?: 0, value)
         }
+    }
+
+    override fun copy(): GCounter {
+        val copy = GCounter()
+        copy.counts.putAll(this.counts)
+        return copy
     }
 
     /**
