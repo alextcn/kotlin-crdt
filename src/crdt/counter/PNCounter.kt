@@ -10,7 +10,7 @@ import crdt.CRDT
 /**
  * Increment-decrement counter.
  */
-internal class PNCounter : CRDT<PNCounter> {
+internal class PNCounter : CRDT<Int, PNCounter> {
 
     private val increments: GCounter
     private val decrements: GCounter
@@ -26,18 +26,12 @@ internal class PNCounter : CRDT<PNCounter> {
         decrements = decs.copy()
     }
 
+
     /**
      * Increment counter by the given key.
      */
     fun increment(key: String) {
         increments.increment(key)
-    }
-
-    /**
-     * Returns the immutable value of this CRDT.
-     */
-    fun value(): Int {
-        return increments.value() - decrements.value()
     }
 
     /**
@@ -50,6 +44,10 @@ internal class PNCounter : CRDT<PNCounter> {
     override fun merge(other: PNCounter) {
         increments.merge(other.increments)
         decrements.merge(other.decrements)
+    }
+
+    override fun value(): Int {
+        return increments.value() - decrements.value()
     }
 
     override fun copy(): PNCounter {

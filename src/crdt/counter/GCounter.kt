@@ -10,7 +10,7 @@ import java.util.*
 /**
  * Grow-only counter.
  */
-internal class GCounter : CRDT<GCounter> {
+internal class GCounter : CRDT<Int, GCounter> {
 
     private val counts: MutableMap<String, Int> = HashMap()
 
@@ -22,10 +22,19 @@ internal class GCounter : CRDT<GCounter> {
         counts[key] = (counts[key] ?: 0) + 1
     }
 
+
     override fun merge(other: GCounter) {
         for ((key, value) in other.counts) {
             counts[key] = Math.max(counts[key] ?: 0, value)
         }
+    }
+
+    override fun value(): Int {
+        var sum = 0
+        for ((key, value) in counts) {
+            sum += value
+        }
+        return sum
     }
 
     override fun copy(): GCounter {
@@ -34,15 +43,5 @@ internal class GCounter : CRDT<GCounter> {
         return copy
     }
 
-    /**
-     * Returns the immutable value of this CRDT.
-     */
-    fun value(): Int {
-        var sum = 0
-        for ((key, value) in counts) {
-            sum += value
-        }
-        return sum
-    }
 
 }
