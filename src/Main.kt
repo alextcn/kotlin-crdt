@@ -1,5 +1,6 @@
 import crdt.counter.GCounter
 import crdt.counter.PNCounter
+import crdt.set.GSet
 
 /**
  * Created by jackqack on 20/05/17.
@@ -72,8 +73,27 @@ fun testPNCounter() {
 
 }
 
+fun testGSet() {
+    val set1 = GSet<Int>()
+    set1.add(1)
+    set1.add(2)
+    set1.add(2)
+    set1.add(4)
+
+    val set2 = GSet<Int>()
+    set2.add(1)
+    set2.add(3)
+    set2.add(4)
+    set2.add(5)
+
+    set1.merge(set2)
+
+    print(set1.value())
+}
+
+
 fun main(args: Array<String>) {
 
-    testPNCounter()
+    testGSet()
 
 }
