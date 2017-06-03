@@ -1,6 +1,6 @@
-package crdt.counter
+package cvrdt.counter
 
-import crdt.CRDT
+import cvrdt.CvRDT
 import java.util.*
 
 /**
@@ -10,7 +10,7 @@ import java.util.*
 /**
  * Grow-only counter.
  */
-internal class GCounter : CRDT<Int, GCounter> {
+internal class GCounter : CvRDT<Int, GCounter> {
 
     private val counts: MutableMap<String, Int> = HashMap()
 

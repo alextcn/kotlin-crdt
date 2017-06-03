@@ -1,12 +1,12 @@
-package crdt.set
+package cvrdt.set
 
-import crdt.CRDT
+import cvrdt.CvRDT
 
 /**
  * Created by jackqack on 21/05/17.
  */
 
-interface CRDTSet<V, T : CRDTSet<V, T>> : CRDT<MutableSet<V>, T> {
+interface CvRDTSet<V, T : CvRDTSet<V, T>> : CvRDT<MutableSet<V>, T> {
 
     fun add(x: V)
 

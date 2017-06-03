@@ -1,4 +1,4 @@
-package crdt.set
+package cvrdt.set
 
 import java.util.*
 
@@ -9,7 +9,7 @@ import java.util.*
 /**
  * Two-phase set.
  */
-internal class TwoPhaseSet<V> : CRDTSet<V, TwoPhaseSet<V>> {
+internal class TwoPhaseSet<V> : CvRDTSet<V, TwoPhaseSet<V>> {
 
     private val added: GSet<V>
     private val tombstone: GSet<V>

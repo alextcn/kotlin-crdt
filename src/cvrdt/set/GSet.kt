@@ -1,4 +1,4 @@
-package crdt.set
+package cvrdt.set
 
 import java.util.*
 import javax.naming.OperationNotSupportedException
@@ -10,7 +10,7 @@ import javax.naming.OperationNotSupportedException
 /**
  * Grow-only set.
  */
-internal class GSet<V> : CRDTSet<V, GSet<V>> {
+internal class GSet<V> : CvRDTSet<V, GSet<V>> {
 
     private val set: MutableSet<V> = HashSet()
 

@@ -1,8 +1,8 @@
-import crdt.counter.GCounter
-import crdt.counter.PNCounter
-import crdt.set.GSet
-import crdt.set.ORSet
-import crdt.set.TwoPhaseSet
+import cvrdt.counter.GCounter
+import cvrdt.counter.PNCounter
+import cvrdt.set.GSet
+import cvrdt.set.ORSet
+import cvrdt.set.TwoPhaseSet
 
 /**
  * Created by jackqack on 20/05/17.

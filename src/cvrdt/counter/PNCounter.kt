@@ -1,6 +1,6 @@
-package crdt.counter
+package cvrdt.counter
 
-import crdt.CRDT
+import cvrdt.CvRDT
 
 /**
  * Created by jackqack on 21/05/17.
@@ -10,7 +10,7 @@ import crdt.CRDT
 /**
  * Increment-decrement counter.
  */
-internal class PNCounter : CRDT<Int, PNCounter> {
+internal class PNCounter : CvRDT<Int, PNCounter> {
 
     private val increments: GCounter
     private val decrements: GCounter
