@@ -14,4 +14,6 @@ interface CRDTSet<V, T : CRDTSet<V, T>> : CRDT<MutableSet<V>, T> {
 
     fun contains(x: V) : Boolean
 
+    fun remove(x: V) : Boolean
+
 }

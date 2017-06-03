@@ -37,7 +37,7 @@ internal class TwoPhaseSet<V> : CRDTSet<V, TwoPhaseSet<V>> {
         return !tombstone.contains(x) && added.contains(x)
     }
 
-    fun remove(x: V): Boolean {
+    override fun remove(x: V): Boolean {
         if (added.contains(x)) {
             tombstone.add(x)
             return true

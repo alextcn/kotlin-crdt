@@ -1,6 +1,7 @@
 import crdt.counter.GCounter
 import crdt.counter.PNCounter
 import crdt.set.GSet
+import crdt.set.ORSet
 import crdt.set.TwoPhaseSet
 
 /**
@@ -118,10 +119,45 @@ fun testTwoPhaseSet() {
     println(set2.value())
 }
 
+fun testORSet() {
+    val set1 = ORSet<Int>()
+    set1.add(1)
+    set1.add(2)
+    set1.add(3)
+    set1.remove(1)
+    set1.add(1)
+    set1.add(1)
+    set1.remove(1)
+
+    println(set1.value())
+
+
+    val set2 = ORSet<Int>()
+    set2.add(2)
+    set2.remove(2)
+    set2.add(4)
+    set2.add(5)
+    println(set2.value())
+
+    set1.merge(set2)
+
+    println(set1.value())
+
+//    set1.remove(2)
+//
+//    set2.add(2)
+//
+//
+//    set2.merge(set1)
+//    set2.addAll(listOf(2, 4, 5, 6))
+//
+//    println(set2.value())
+}
+
 
 fun main(args: Array<String>) {
 
-    testTwoPhaseSet()
+    testORSet()
 
 }
 

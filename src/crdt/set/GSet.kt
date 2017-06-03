@@ -1,6 +1,7 @@
 package crdt.set
 
 import java.util.*
+import javax.naming.OperationNotSupportedException
 
 /**
  * Created by jackqack on 21/05/17.
@@ -33,6 +34,9 @@ internal class GSet<V> : CRDTSet<V, GSet<V>> {
         return set.contains(x)
     }
 
+    override fun remove(x: V): Boolean {
+        throw OperationNotSupportedException("GSet does not allows removes")
+    }
 
     override fun merge(other: GSet<V>) {
         set.addAll(other.set)
