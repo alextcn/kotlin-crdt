@@ -9,10 +9,10 @@ import cmrdt.set.operation.SetOperation
  * Created by jackqack on 04/06/17.
  */
 
-internal abstract class CmRDTSet<V, O : SetOperation<V>, T : CmRDTSet<V, O, T>> : CmRDT<MutableSet<V>, O, T> {
+internal abstract class CmRDTSet<V, T : CmRDTSet<V, T>> : CmRDT<MutableSet<V>, SetOperation<V>, T> {
 
 
-    override fun upgrade(op: O) {
+    override fun upgrade(op: SetOperation<V>) {
         if (op is AddOp<*>) {
             this.add(op.x)
         } else if (op is RemoveOp<*>) {
