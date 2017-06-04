@@ -5,7 +5,20 @@ package cmrdt
  * Created by jackqack on 03/06/17.
  */
 
-internal abstract class CmRDT<V, O : Operation, T : CmRDT<V, O, T>>(var downstreamListener: IDownstreamListener<O>? = null) {
+internal abstract class CmRDT<V, O : Operation, T : CmRDT<V, O, T>> {
+
+    /**
+     * After any changes in local CmRDT replica each operation
+     * must be transmitted to all replicas. This listener
+     * is called after local changes with an operation which should be send.
+     * Operation must be commutative.
+     */
+    private var onDownstream: ((O) -> Unit)?
+
+
+    constructor(onDownstream: ((O) -> Unit)? = null) {
+        this.onDownstream = onDownstream
+    }
 
 
     /**
