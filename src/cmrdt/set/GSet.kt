@@ -1,6 +1,5 @@
 package cmrdt.set
 
-import cmrdt.set.operation.AddOp
 import cmrdt.set.operation.SetOperation
 import java.util.*
 import javax.naming.OperationNotSupportedException
@@ -24,7 +23,7 @@ internal class GSet<V> : CmRDTSet<V, GSet<V>> {
     override fun add(x: V, withDownstream: Boolean) {
         if (!set.contains(x)) {
             set.add(x)
-            if (withDownstream) onDownstream(AddOp(x))
+            if (withDownstream) onDownstream(SetOperation(SetOperation.Type.ADD, x))
         }
     }
 
@@ -38,10 +37,22 @@ internal class GSet<V> : CmRDTSet<V, GSet<V>> {
         return set.contains(x)
     }
 
-
     override fun remove(x: V, withDownstream: Boolean): Boolean {
         throw OperationNotSupportedException("GSet does not allows removes")
     }
+
+
+    override fun upgrade(op: SetOperation<V>) {
+        when (op.type) {
+            SetOperation.Type.ADD -> {
+                this.add(op.x, false)
+            }
+            SetOperation.Type.REMOVE -> {
+                this.remove(op.x, false)
+            }
+        }
+    }
+
 
     override fun value(): MutableSet<V> {
         return HashSet(this.set)

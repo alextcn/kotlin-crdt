@@ -6,12 +6,10 @@ import cmrdt.Operation
  * Created by jackqack on 04/06/17.
  */
 
-internal abstract class SetOperation<V> : Operation {
+internal data class SetOperation<out V>(val type: Type, val x: V) : Operation {
 
-    val x: V
-
-    protected constructor(x: V) {
-        this.x = x
+    enum class Type {
+        ADD, REMOVE
     }
 
 }

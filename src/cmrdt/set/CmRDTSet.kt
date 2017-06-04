@@ -1,8 +1,6 @@
 package cmrdt.set
 
 import cmrdt.CmRDT
-import cmrdt.set.operation.AddOp
-import cmrdt.set.operation.RemoveOp
 import cmrdt.set.operation.SetOperation
 
 /**
@@ -13,14 +11,6 @@ internal abstract class CmRDTSet<V, T : CmRDTSet<V, T>> : CmRDT<MutableSet<V>, S
 
     constructor(onDownstream: ((SetOperation<V>) -> Unit)? = null) : super(onDownstream)
 
-
-    override fun upgrade(op: SetOperation<V>) {
-        if (op is AddOp<*>) {
-            this.add(op.x, false)
-        } else if (op is RemoveOp<*>) {
-            this.remove(op.x, false)
-        }
-    }
 
     abstract fun add(x: V, withDownstream: Boolean = true)
 
