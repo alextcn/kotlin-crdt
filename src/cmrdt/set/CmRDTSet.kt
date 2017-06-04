@@ -1,12 +1,15 @@
 package cmrdt.set
 
 import cmrdt.CmRDT
+import cmrdt.set.operation.AddOp
+import cmrdt.set.operation.RemoveOp
+import cmrdt.set.operation.SetOperation
 
 /**
  * Created by jackqack on 04/06/17.
  */
 
-abstract class CmRDTSet<V, O : SetOperation<V>, T : CmRDTSet<V, O, T>> : CmRDT<MutableSet<V>, O, T> {
+internal abstract class CmRDTSet<V, O : SetOperation<V>, T : CmRDTSet<V, O, T>> : CmRDT<MutableSet<V>, O, T> {
 
 
     override fun upgrade(op: O) {

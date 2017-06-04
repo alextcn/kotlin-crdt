@@ -1,4 +1,4 @@
-package cmrdt.set
+package cmrdt.set.operation
 
 import cmrdt.Operation
 
@@ -6,7 +6,7 @@ import cmrdt.Operation
  * Created by jackqack on 04/06/17.
  */
 
-abstract class SetOperation<V> : Operation {
+internal abstract class SetOperation<V> : Operation {
 
     val x: V
 

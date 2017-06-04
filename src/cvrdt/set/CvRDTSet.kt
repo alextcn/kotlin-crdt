@@ -6,7 +6,7 @@ import cvrdt.CvRDT
  * Created by jackqack on 21/05/17.
  */
 
-interface CvRDTSet<V, T : CvRDTSet<V, T>> : CvRDT<MutableSet<V>, T> {
+internal interface CvRDTSet<V, T : CvRDTSet<V, T>> : CvRDT<MutableSet<V>, T> {
 
     fun add(x: V)
 

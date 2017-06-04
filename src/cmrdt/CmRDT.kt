@@ -5,7 +5,7 @@ package cmrdt
  * Created by jackqack on 03/06/17.
  */
 
-interface CmRDT<V, O : Operation, T : CmRDT<V, O, T>> {
+internal interface CmRDT<V, O : Operation, T : CmRDT<V, O, T>> {
 
     /**
      * Upgrade CmRDT replica by given operation received from

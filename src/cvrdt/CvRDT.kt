@@ -4,7 +4,7 @@ package cvrdt
  * Created by jackqack on 20/05/17.
  */
 
-interface CvRDT<V, T : CvRDT<V, T>> {
+internal interface CvRDT<V, T : CvRDT<V, T>> {
 
     /**
      * Merge another CvRDT into this one.
