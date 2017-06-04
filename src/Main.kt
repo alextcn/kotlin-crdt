@@ -154,10 +154,28 @@ fun testORSet() {
 //    println(set2.value())
 }
 
+fun testOpGSet() {
+
+    val set1 = cmrdt.set.GSet<Int>()
+    val set2 = cmrdt.set.GSet<Int>()
+
+    set1.setDownstream { set2.upgrade(it) }
+    set2.setDownstream { set1.upgrade(it) }
+
+    set2.add(0)
+    println(set1.value())
+    println(set2.value())
+
+    set1.add(1)
+    println(set1.value())
+    println(set2.value())
+
+}
+
 
 fun main(args: Array<String>) {
 
-    testORSet()
+    testOpGSet()
 
 }
 

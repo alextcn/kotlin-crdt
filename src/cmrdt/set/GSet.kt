@@ -1,7 +1,9 @@
 package cmrdt.set
 
+import cmrdt.set.operation.AddOp
 import cmrdt.set.operation.SetOperation
 import java.util.*
+import javax.naming.OperationNotSupportedException
 
 /**
  * Created by jackqack on 04/06/17.
@@ -9,34 +11,44 @@ import java.util.*
 
 internal class GSet<V> : CmRDTSet<V, GSet<V>> {
 
-    constructor(onDownstream: ((SetOperation<V>) -> Unit)? = null) : super(onDownstream)
-
-
     private val set: MutableSet<V> = HashSet()
 
 
-    override fun add(x: V) {
-        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+    constructor(onDownstream: ((SetOperation<V>) -> Unit)? = null) : super(onDownstream)
+
+    private constructor(onDownstream: ((SetOperation<V>) -> Unit)? = null, set: MutableSet<V>) : super(onDownstream) {
+        this.set.addAll(set)
     }
 
-    override fun addAll(elements: Collection<V>): Boolean {
-        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+    override fun add(x: V, withDownstream: Boolean) {
+        if (!set.contains(x)) {
+            set.add(x)
+            if (withDownstream) onDownstream(AddOp(x))
+        }
+    }
+
+    override fun addAll(elements: Collection<V>, withDownstream: Boolean) {
+        for (x in elements) {
+            this.add(x, withDownstream)
+        }
     }
 
     override fun contains(x: V): Boolean {
-        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return set.contains(x)
     }
 
-    override fun remove(x: V): Boolean {
-        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+    override fun remove(x: V, withDownstream: Boolean): Boolean {
+        throw OperationNotSupportedException("GSet does not allows removes")
     }
 
     override fun value(): MutableSet<V> {
-        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return HashSet(this.set)
     }
 
     override fun copy(): GSet<V> {
-        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return GSet(onDownstream, set)
     }
 
 }

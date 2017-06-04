@@ -16,18 +16,18 @@ internal abstract class CmRDTSet<V, T : CmRDTSet<V, T>> : CmRDT<MutableSet<V>, S
 
     override fun upgrade(op: SetOperation<V>) {
         if (op is AddOp<*>) {
-            this.add(op.x)
+            this.add(op.x, false)
         } else if (op is RemoveOp<*>) {
-            this.remove(op.x)
+            this.remove(op.x, false)
         }
     }
 
-    abstract fun add(x: V)
+    abstract fun add(x: V, withDownstream: Boolean = true)
 
-    abstract fun addAll(elements: Collection<V>): Boolean
+    abstract fun addAll(elements: Collection<V>, withDownstream: Boolean = true)
 
     abstract fun contains(x: V): Boolean
 
-    abstract fun remove(x: V): Boolean
+    abstract fun remove(x: V, withDownstream: Boolean = true): Boolean
 
 }

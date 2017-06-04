@@ -13,10 +13,14 @@ internal abstract class CmRDT<V, O : Operation, T : CmRDT<V, O, T>> {
      * is called after local changes with an operation which should be send.
      * Operation must be commutative.
      */
-    private var onDownstream: ((O) -> Unit)?
+    protected var onDownstream: ((O) -> Unit) = {} // do nothing approach for function type
 
 
     constructor(onDownstream: ((O) -> Unit)? = null) {
+        if (onDownstream != null) this.onDownstream = onDownstream
+    }
+
+    fun setDownstream(onDownstream: (O) -> Unit) {
         this.onDownstream = onDownstream
     }
 
