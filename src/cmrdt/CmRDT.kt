@@ -5,31 +5,24 @@ package cmrdt
  * Created by jackqack on 03/06/17.
  */
 
-internal interface CmRDT<V, O : Operation, T : CmRDT<V, O, T>> {
+internal abstract class CmRDT<V, O : Operation, T : CmRDT<V, O, T>>(var downstreamListener: IDownstreamListener<O>? = null) {
+
 
     /**
      * Upgrade CmRDT replica by given operation received from
      * another replica.
      * Operation must be commutative.
      */
-    fun upgrade(op: O)
-
-    /**
-     * After any changes in local CmRDT replica each operation
-     * must be transmitted to all replicas. This method
-     * is called after local changes with an operation which should be send.
-     * Operation must be commutative.
-     */
-    fun downstream(op: O)
+    abstract fun upgrade(op: O)
 
     /**
      * Returns the immutable value of this CmRDT.
      */
-    fun value(): V
+    abstract fun value(): V
 
     /**
      * Create a copy of this CmRDT.
      */
-    fun copy(): T
+    abstract fun copy(): T
 
 }

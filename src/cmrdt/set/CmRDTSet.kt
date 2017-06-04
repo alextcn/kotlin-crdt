@@ -1,6 +1,7 @@
 package cmrdt.set
 
 import cmrdt.CmRDT
+import cmrdt.IDownstreamListener
 import cmrdt.set.operation.AddOp
 import cmrdt.set.operation.RemoveOp
 import cmrdt.set.operation.SetOperation
@@ -9,7 +10,8 @@ import cmrdt.set.operation.SetOperation
  * Created by jackqack on 04/06/17.
  */
 
-internal abstract class CmRDTSet<V, T : CmRDTSet<V, T>> : CmRDT<MutableSet<V>, SetOperation<V>, T> {
+internal abstract class CmRDTSet<V, T : CmRDTSet<V, T>>(downstreamListener: IDownstreamListener<SetOperation<V>>?) :
+        CmRDT<MutableSet<V>, SetOperation<V>, T>(downstreamListener) {
 
 
     override fun upgrade(op: SetOperation<V>) {
