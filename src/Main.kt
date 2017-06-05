@@ -156,19 +156,39 @@ fun testORSet() {
 
 fun testOpGSet() {
 
-    val set1 = cmrdt.set.GSet<Int>()
-    val set2 = cmrdt.set.GSet<Int>()
+    val set1 = cmrdt.set.ORSet<Int>()
+    val set2 = cmrdt.set.ORSet<Int>()
 
-    set1.setDownstream { set2.upgrade(it) }
-    set2.setDownstream { set1.upgrade(it) }
+    set1.setDownstream {
+        set2.upgrade(it)
+    }
+    set2.setDownstream {
+        set1.upgrade(it)
+    }
 
-    set2.add(0)
-    println(set1.value())
-    println(set2.value())
+
+
 
     set1.add(1)
     println(set1.value())
     println(set2.value())
+
+    set1.addAll(listOf(3, 4, 5))
+    println(set1.value())
+    println(set2.value())
+
+    set1.add(5)
+    println(set1.value())
+    println(set2.value())
+
+    set2.add(5)
+    println(set1.value())
+    println(set2.value())
+
+    set1.remove(5)
+    println(set1.value())
+    println(set2.value())
+    
 
 }
 

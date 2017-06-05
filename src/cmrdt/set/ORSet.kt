@@ -25,7 +25,9 @@ internal class ORSet<V> : CmRDTSet<V, ORSetOperation<V>, ORSet<V>> {
         if (!map.containsKey(x)) {
             map[x] = HashSet()
         }
-        onDownstream(ORSetOperation(SetOperation.Type.ADD, x, HashSet(map[x]!!)))
+        val tag = UUID.randomUUID().toString()
+        map[x]!!.add(tag)
+        onDownstream(ORSetOperation(SetOperation.Type.ADD, x, listOf(tag)))
     }
 
     override fun addAll(elements: Collection<V>) {
@@ -67,6 +69,7 @@ internal class ORSet<V> : CmRDTSet<V, ORSetOperation<V>, ORSet<V>> {
     private fun removeTags(x: V, tags: Collection<String>) {
         if (map.containsKey(x)) {
             map[x]!!.removeAll(tags)
+            if (map[x]!!.isEmpty()) map.remove(x)
         }
     }
 
