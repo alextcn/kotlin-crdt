@@ -7,17 +7,17 @@ import cmrdt.set.operation.SetOperation
  * Created by jackqack on 04/06/17.
  */
 
-internal abstract class CmRDTSet<V, T : CmRDTSet<V, T>> : CmRDT<MutableSet<V>, SetOperation<V>, T> {
+internal abstract class CmRDTSet<V, O : SetOperation<V>, T : CmRDTSet<V, O, T>> : CmRDT<MutableSet<V>, O, T> {
 
     constructor(onDownstream: ((SetOperation<V>) -> Unit)? = null) : super(onDownstream)
 
 
-    abstract fun add(x: V, withDownstream: Boolean = true)
+    abstract fun add(x: V)
 
-    abstract fun addAll(elements: Collection<V>, withDownstream: Boolean = true)
+    abstract fun addAll(elements: Collection<V>)
 
     abstract fun contains(x: V): Boolean
 
-    abstract fun remove(x: V, withDownstream: Boolean = true): Boolean
+    abstract fun remove(x: V): Boolean
 
 }

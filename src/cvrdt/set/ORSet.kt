@@ -32,7 +32,7 @@ internal class ORSet<V> : CvRDTSet<V, ORSet<V>> {
 
     override fun addAll(elements: Collection<V>): Boolean {
         for (x in elements) add(x)
-        return elements.size > 0
+        return elements.isNotEmpty()
     }
 
     override fun contains(x: V): Boolean {
