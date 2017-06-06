@@ -5,6 +5,7 @@ import cvrdt.counter.PNCounter
 import cvrdt.set.GSet
 import cvrdt.set.ORSet
 import cvrdt.set.TwoPhaseSet
+import io.vertx.core.Vertx
 
 /**
  * Created by jackqack on 20/05/17.
