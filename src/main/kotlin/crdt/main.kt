@@ -1,3 +1,5 @@
+package crdt
+
 import cvrdt.counter.GCounter
 import cvrdt.counter.PNCounter
 import cvrdt.set.GSet
@@ -188,7 +190,7 @@ fun testOpGSet() {
     set1.remove(5)
     println(set1.value())
     println(set2.value())
-    
+
 
 }
 
