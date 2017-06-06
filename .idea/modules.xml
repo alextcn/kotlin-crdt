@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/crdt.iml" filepath="$PROJECT_DIR$/crdt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/crdt.iml" filepath="$PROJECT_DIR$/.idea/modules/crdt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/crdt_main.iml" filepath="$PROJECT_DIR$/.idea/modules/crdt_main.iml" group="crdt" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/crdt_test.iml" filepath="$PROJECT_DIR$/.idea/modules/crdt_test.iml" group="crdt" />
     </modules>
   </component>
 </project>
