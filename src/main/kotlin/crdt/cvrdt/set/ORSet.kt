@@ -6,7 +6,7 @@ import java.util.*
  * Created by jackqack on 02/06/17.
  */
 
-internal class ORSet<V> : CvRDTSet<V, ORSet<V>> {
+class ORSet<V> : CvRDTSet<V, ORSet<V>> {
 
     private data class Sets(val adds: MutableSet<String> = HashSet(),
                             val removes: MutableSet<String> = HashSet())

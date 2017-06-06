@@ -8,7 +8,7 @@ import javax.naming.OperationNotSupportedException
  * Created by jackqack on 04/06/17.
  */
 
-internal class GSet<V> : CmRDTSet<V, SetOperation<V>, GSet<V>> {
+class GSet<V> : CmRDTSet<V, SetOperation<V>, GSet<V>> {
 
     private val set: MutableSet<V> = HashSet()
 

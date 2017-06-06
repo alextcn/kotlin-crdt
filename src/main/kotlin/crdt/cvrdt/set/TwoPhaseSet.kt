@@ -1,6 +1,5 @@
 package cvrdt.set
 
-import java.util.*
 
 /**
  * Created by jackqack on 21/05/17.
@@ -9,7 +8,7 @@ import java.util.*
 /**
  * Two-phase set.
  */
-internal class TwoPhaseSet<V> : CvRDTSet<V, TwoPhaseSet<V>> {
+class TwoPhaseSet<V> : CvRDTSet<V, TwoPhaseSet<V>> {
 
     private val added: GSet<V>
     private val tombstone: GSet<V>

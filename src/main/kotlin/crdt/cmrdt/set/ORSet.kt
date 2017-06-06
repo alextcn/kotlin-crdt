@@ -9,7 +9,7 @@ import kotlin.collections.HashSet
  * Created by jackqack on 04/06/17.
  */
 
-internal class ORSet<V> : CmRDTSet<V, ORSetOperation<V>, ORSet<V>> {
+class ORSet<V> : CmRDTSet<V, ORSetOperation<V>, ORSet<V>> {
 
     private val map: MutableMap<V, MutableSet<String>> = HashMap()
 

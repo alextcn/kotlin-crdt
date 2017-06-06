@@ -10,7 +10,7 @@ import cvrdt.CvRDT
 /**
  * Increment-decrement counter.
  */
-internal class PNCounter : CvRDT<Int, PNCounter> {
+class PNCounter : CvRDT<Int, PNCounter> {
 
     private val increments: GCounter
     private val decrements: GCounter

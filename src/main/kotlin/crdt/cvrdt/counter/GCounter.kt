@@ -10,7 +10,7 @@ import java.util.*
 /**
  * Grow-only counter.
  */
-internal class GCounter : CvRDT<Int, GCounter> {
+class GCounter : CvRDT<Int, GCounter> {
 
     private val counts: MutableMap<String, Int> = HashMap()
 

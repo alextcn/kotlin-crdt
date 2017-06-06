@@ -10,7 +10,7 @@ import javax.naming.OperationNotSupportedException
 /**
  * Grow-only set.
  */
-internal class GSet<V> : CvRDTSet<V, GSet<V>> {
+class GSet<V> : CvRDTSet<V, GSet<V>> {
 
     private val set: MutableSet<V> = HashSet()
 

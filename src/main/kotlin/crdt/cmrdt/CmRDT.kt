@@ -5,7 +5,7 @@ package cmrdt
  * Created by jackqack on 03/06/17.
  */
 
-internal abstract class CmRDT<V, O : Operation, T : CmRDT<V, O, T>> {
+abstract class CmRDT<V, O : Operation, T : CmRDT<V, O, T>> {
 
     /**
      * After any changes in local CmRDT replica each operation
