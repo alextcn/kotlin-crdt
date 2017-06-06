@@ -7,29 +7,36 @@ package vertx
 
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.Future
-import io.vertx.ext.web.Router
 
 
 class VerticleNode : AbstractVerticle() {
 
+    companion object {
+        const val PORT = 10390
+    }
+
+
     override fun start(startFuture: Future<Void>?) {
-        val router = createRouter()
+        println("start server")
+        val server = vertx.createNetServer()
 
-        vertx.createHttpServer()
-                .requestHandler { router.accept(it) }
-                .listen(config().getInteger("http.port", 8080)) { result ->
-                    if (result.succeeded()) {
-                        startFuture?.complete()
-                    } else {
-                        startFuture?.fail(result.cause())
-                    }
-                }
+        // this handler is called whenever a new TCP connection is created by another node
+        server.connectHandler {
+            println("New incoming TCP connection!")
+            it.handler({
+                println("incoming data (${it.length()} bytes): ${it.getString(0, it.length())}")
+            })
+        }
+
+        server.listen(PORT) { result ->
+            if (result.succeeded()) {
+                println("server started")
+                startFuture?.complete()
+            } else {
+                println("server failed: ${result.cause()}")
+                startFuture?.fail(result.cause())
+            }
+        }
     }
 
-    private fun createRouter() = Router.router(vertx).apply {
-        get("/").handler({ it.response().end("Welcome!") })
-        get("/islands").handler({ it.response().end("Islands") })
-    }
-
-    //
 }
