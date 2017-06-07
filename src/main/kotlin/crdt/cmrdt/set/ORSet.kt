@@ -14,9 +14,10 @@ class ORSet<V> : CmRDTSet<V, ORSetOperation<V>, ORSet<V>> {
     private val map: MutableMap<V, MutableSet<String>> = HashMap()
 
 
-    constructor(onDownstream: ((SetOperation<V>) -> Unit)? = null) : super(onDownstream)
+    constructor(onDownstream: (ORSetOperation<V>) -> Unit) : super(onDownstream)
 
-    private constructor(set: MutableMap<V, MutableSet<String>>) {
+    constructor(set: MutableMap<V, MutableSet<String>>,
+                onDownstream: (ORSetOperation<V>) -> Unit) : super(onDownstream) {
         for ((key, value) in set) map.put(key, HashSet(value))
     }
 
@@ -79,6 +80,17 @@ class ORSet<V> : CmRDTSet<V, ORSetOperation<V>, ORSet<V>> {
     }
 
     override fun copy(): ORSet<V> {
-        return ORSet(map)
+        return ORSet(map, {})
+    }
+
+    fun getState(): Map<V, Set<String>> {
+        val copy = HashMap<V, Set<String>>()
+        for ((key, value) in map) copy.put(key, HashSet(value))
+        return copy
+    }
+
+    fun clear() {
+        for ((_, value) in map) value.clear()
+        map.clear()
     }
 }

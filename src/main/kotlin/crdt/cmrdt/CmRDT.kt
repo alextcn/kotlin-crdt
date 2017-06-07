@@ -5,20 +5,16 @@ package cmrdt
  * Created by jackqack on 03/06/17.
  */
 
-abstract class CmRDT<V, O : Operation, T : CmRDT<V, O, T>> {
+abstract class CmRDT<V, O : Operation, T : CmRDT<V, O, T>>(
+        /**
+         * After any changes in local CmRDT replica each operation
+         * must be transmitted to all replicas. This listener
+         * is called after local changes with an operation which should be send.
+         * Operation must be commutative.
+         */
+        protected var onDownstream: ((O) -> Unit) // do nothing approach for function type
+) {
 
-    /**
-     * After any changes in local CmRDT replica each operation
-     * must be transmitted to all replicas. This listener
-     * is called after local changes with an operation which should be send.
-     * Operation must be commutative.
-     */
-    protected var onDownstream: ((O) -> Unit) = {} // do nothing approach for function type
-
-
-    constructor(onDownstream: ((O) -> Unit)? = null) {
-        if (onDownstream != null) this.onDownstream = onDownstream
-    }
 
     fun setDownstream(onDownstream: (O) -> Unit) {
         this.onDownstream = onDownstream

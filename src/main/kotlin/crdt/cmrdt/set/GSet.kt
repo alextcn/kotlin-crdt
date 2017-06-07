@@ -13,9 +13,9 @@ class GSet<V> : CmRDTSet<V, SetOperation<V>, GSet<V>> {
     private val set: MutableSet<V> = HashSet()
 
 
-    constructor(onDownstream: ((SetOperation<V>) -> Unit)? = null) : super(onDownstream)
+    constructor(onDownstream: (SetOperation<V>) -> Unit) : super(onDownstream)
 
-    private constructor(set: MutableSet<V>) {
+    private constructor(set: MutableSet<V>, onDownstream: (SetOperation<V>) -> Unit) : super(onDownstream) {
         this.set.addAll(set)
     }
 
@@ -57,7 +57,7 @@ class GSet<V> : CmRDTSet<V, SetOperation<V>, GSet<V>> {
     }
 
     override fun copy(): GSet<V> {
-        return GSet(set)
+        return GSet(set, {})
     }
 
 }

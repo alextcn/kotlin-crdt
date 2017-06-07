@@ -17,7 +17,7 @@ class VerticleNode : AbstractVerticle() {
 
 
     override fun start(startFuture: Future<Void>?) {
-        println("start server")
+
         val server = vertx.createNetServer()
 
         // this handler is called whenever a new TCP connection is created by another node
@@ -26,8 +26,10 @@ class VerticleNode : AbstractVerticle() {
             it.handler({
                 println("incoming data (${it.length()} bytes): ${it.getString(0, it.length())}")
             })
+            it.handler { println("second handler") }
         }
 
+        println("start server")
         server.listen(PORT) { result ->
             if (result.succeeded()) {
                 println("server started")
