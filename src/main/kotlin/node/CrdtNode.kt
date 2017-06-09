@@ -9,9 +9,10 @@ import kotlin.collections.HashSet
 /**
  * Created by jackqack on 06/06/17.
  */
-abstract class CrdtNode<T>(val node: Node) {
 
-    data class Node(val id: String, val address: String, val port: Int)
+data class Node(val id: String, val address: String, val port: Int)
+
+abstract class CrdtNode<T>(val node: Node) {
 
     private val downstreamOps: MutableMap<Node, Queue<ORSetOperation<T>>> = HashMap()
     private val nodes: MutableSet<Node> = HashSet()
