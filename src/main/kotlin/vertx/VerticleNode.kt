@@ -10,10 +10,13 @@ import io.vertx.core.AbstractVerticle
 import io.vertx.core.Context
 import io.vertx.core.Future
 import io.vertx.core.Vertx
+import io.vertx.core.buffer.Buffer
+import io.vertx.core.json.JsonObject
 import io.vertx.core.net.*
 import node.CrdtNode
 import node.Node
 import java.io.File
+import java.util.*
 
 
 class VerticleNode : AbstractVerticle() {
@@ -28,19 +31,18 @@ class VerticleNode : AbstractVerticle() {
     }
 
 
-    val node = Node("1", "127.0.0.1", PORT)
+    val myNode = Node("127.0.0.1", PORT)
     var server: NetServer? = null
-    val clients: MutableMap<Node, NetClient> = hashMapOf()
-    val crdt = object : CrdtNode<Int>(node) {
+    val nodes: MutableMap<Node, Pair<NetClient, NetSocket?>> = hashMapOf()
+    val crdt: CrdtNode<Int> = object : CrdtNode<Int>(myNode) {
 
         override fun sendOperation(node: Node, operation: ORSetOperation<Int>) {
-            // TODO: send to every opened socket
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            nodes[node]?.second?.write(toJson(operation).encode())
+            onOperationSent(node)
         }
 
         override fun requestInitialState(node: Node) {
-            // TODO:
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            nodes[node]?.second?.write(VerticleMessage(MessageType.REQUEST_STATE).toJson().encode())
         }
 
     }
@@ -48,11 +50,10 @@ class VerticleNode : AbstractVerticle() {
 
     override fun init(vertx: Vertx?, context: Context?) {
         super.init(vertx, context)
-        if (vertx != null) {
-            initServer(vertx)
-            for (to in readNodesFromFile(DEFAULT_NODES_PATH)) {
-                addClient(vertx, to)
-            }
+
+        initServer(vertx!!)
+        for (to in readNodesFromFile(DEFAULT_NODES_PATH)) {
+            addClient(vertx, to)
         }
     }
 
@@ -62,54 +63,6 @@ class VerticleNode : AbstractVerticle() {
         server?.connectHandler(this::onNewNodeConnected)
     }
 
-    override fun start(startFuture: Future<Void>?) {
-
-        // connect server
-        server?.listen(PORT) { result ->
-            if (result.succeeded()) {
-                // TODO:
-                crdt.start(clients.keys)
-                println("server started")
-                startFuture?.complete()
-            } else {
-                // TODO:
-                println("server failed: ${result.cause()}")
-                startFuture?.fail(result.cause())
-            }
-        }
-
-        // connect all clients
-        for ((to, client) in clients) {
-            client.connect(to.port, to.address, { res ->
-                if (res.succeeded()) {
-                    val socket = res.result()
-                    // TODO:
-                } else {
-                    // TODO:
-                }
-            })
-        }
-    }
-
-    override fun stop(stopFuture: Future<Void>?) {
-        super.stop(stopFuture)
-        for ((_, client) in clients) client.close()
-        server?.close({ result ->
-            if (result.succeeded()) stopFuture?.complete()
-            else stopFuture?.fail(result.cause())
-        })
-    }
-
-    // This handler is called whenever a new TCP connection is created by another node
-    private fun onNewNodeConnected(socket: NetSocket) {
-        // TODO:
-        println("New incoming TCP connection!")
-        socket.handler({
-            println("incoming data (${it.length()} bytes): ${it.getString(0, it.length())}")
-        })
-        socket.handler { println("second handler") }
-    }
-
     private fun addClient(vertx: Vertx, to: Node) {
         val options = NetClientOptions()
                 .setConnectTimeout(CLIENT_CONNECT_TIMEOUT)
@@ -117,7 +70,89 @@ class VerticleNode : AbstractVerticle() {
                 .setReconnectAttempts(CLIENT_RECONNECT_ATTEMPTS)
         val client = vertx.createNetClient(options)
 
-        clients.put(to, client)
+        nodes.put(to, Pair(client, null))
+    }
+
+    override fun start(startFuture: Future<Void>?) {
+
+        // connect server
+        server?.listen(PORT) { result ->
+            if (result.succeeded()) {
+                log("server started: $myNode")
+                crdt.start(nodes.keys)
+                startFuture?.complete()
+            } else {
+                startFuture?.fail(result.cause())
+            }
+        }
+
+        // connect all nodes
+        for ((to, client) in nodes) {
+            client.first.connect(to.port, to.address, { res ->
+                if (res.succeeded()) {
+                    log("connected to: $to")
+                    val socket = res.result()
+                    nodes[to] = Pair(client.first, socket)
+                    socket.handler({ buffer -> onMessageReceived(socket, buffer) })
+                } else {
+                    log("connection failed to: $to")
+                }
+            })
+        }
+    }
+
+    override fun stop(stopFuture: Future<Void>?) {
+        for ((_, client) in nodes) client.first.close()
+
+        server?.close({ result ->
+            if (result.succeeded()) stopFuture?.complete()
+            else stopFuture?.fail(result.cause())
+        })
+    }
+
+    // This handler is called whenever a new TCP connection is created by another myNode
+    private fun onNewNodeConnected(serverSocket: NetSocket) {
+        val node = Node(serverSocket.remoteAddress().host(), serverSocket.remoteAddress().port())
+        if (nodes.containsKey(node)) {
+            serverSocket.handler({ buffer -> onMessageReceived(serverSocket, buffer) })
+        } else {
+            serverSocket.close()
+        }
+    }
+
+    private fun onMessageReceived(socket: NetSocket, buffer: Buffer) {
+        val str = buffer.getString(0, buffer.length())
+        val msg = parseMessage(str)
+        if (msg != null) {
+            when (msg.type) {
+                MessageType.REQUEST_STATE -> {
+                    if (crdt.getState() != null) {
+                        // TODO: test it
+                        // TODO: does it work?
+                        socket.write(VerticleMessage(MessageType.RESPONSE_STATE, JsonObject.mapFrom(crdt.getState()).encode())
+                                .toJson().encode())
+                    }
+                }
+                MessageType.RESPONSE_STATE -> {
+                    // TODO: test it
+                    if (!crdt.isInitialized() && msg.data != null) {
+                        val state = parseState<Int>(msg.data)
+                        if (state != null) crdt.setInitialState(state)
+                    }
+                }
+                MessageType.SEND_OPERATION -> {
+                    // TODO: test it
+                    if (crdt.isInitialized() && msg.data != null) {
+                        val op = parseOperation<Int>(msg.data)
+                        if (op != null) crdt.applyOperation(op)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun onOperationSent(node: Node) {
+        crdt.onNextOperationSent(node)
     }
 
 }
@@ -130,12 +165,11 @@ private fun readNodesFromFile(path: String): List<Node> {
         if (file.isFile && file.canRead()) {
             file.readLines().forEach {
                 val ss = it.trim().split(" ")
-                if (ss.size == 3) {
-                    val id = ss[0]
-                    val ip = ss[1]
-                    val port = ss[2].toIntOrNull()
+                if (ss.size == 2) {
+                    val ip = ss[0]
+                    val port = ss[1].toIntOrNull()
                     if (port != null) {
-                        list.add(Node(id, ip, port))
+                        list.add(Node(ip, port))
                     }
                 }
             }
@@ -145,4 +179,8 @@ private fun readNodesFromFile(path: String): List<Node> {
         e.printStackTrace()
     }
     return list
+}
+
+private fun log(message: String) {
+    println(message)
 }

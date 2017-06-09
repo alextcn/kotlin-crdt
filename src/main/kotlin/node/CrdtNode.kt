@@ -10,7 +10,11 @@ import kotlin.collections.HashSet
  * Created by jackqack on 06/06/17.
  */
 
-data class Node(val id: String, val address: String, val port: Int)
+data class Node(val address: String, val port: Int) {
+
+    override fun toString() = "$address:$port"
+
+}
 
 abstract class CrdtNode<T>(val node: Node) {
 
@@ -23,13 +27,13 @@ abstract class CrdtNode<T>(val node: Node) {
     private var isInitialized = false
 
 
-    // CRDT node methods
+    // CRDT myNode methods
 
 
     /**
-     * Start the node.
-     * This node creates completely new CRDT if given list of
-     * nodes is null or empty. Otherwise this node sends
+     * Start the myNode.
+     * This myNode creates completely new CRDT if given list of
+     * nodes is null or empty. Otherwise this myNode sends
      * a request to other nodes for an initial state.
      */
     fun start(initialNodes: Collection<Node>?) {
@@ -51,7 +55,7 @@ abstract class CrdtNode<T>(val node: Node) {
     }
 
     /**
-     * Stop the node and clear all inner data.
+     * Stop the myNode and clear all inner data.
      */
     fun stop() {
         if (!isRunning) return
@@ -62,7 +66,7 @@ abstract class CrdtNode<T>(val node: Node) {
     }
 
     /**
-     * Method must be called whenever new node is
+     * Method must be called whenever new myNode is
      * connecting to the existing distributed CRDT.
      */
     fun addNode(node: Node) {
@@ -70,7 +74,7 @@ abstract class CrdtNode<T>(val node: Node) {
         if (downstreamOps.containsKey(node))
             downstreamOps[node]!!.clear()
         else
-            downstreamOps[node] = ArrayDeque()
+            downstreamOps[node] = ArrayDeque<ORSetOperation<T>>()
     }
 
     /**
@@ -102,21 +106,23 @@ abstract class CrdtNode<T>(val node: Node) {
         }
     }
 
+    fun isInitialized(): Boolean = isInitialized
+
     /**
      * Method must be called whenever new operation received
-     * from any node.
+     * from any myNode.
      */
     fun applyOperation(op: ORSetOperation<T>) {
         if (isInitialized) set?.upgrade(op)
     }
 
     /**
-     * Sends an operation to the given node.
+     * Sends an operation to the given myNode.
      */
     abstract fun sendOperation(node: Node, operation: ORSetOperation<T>)
 
     /**
-     * Requests given node for the initial CRDT state.
+     * Requests given myNode for the initial CRDT state.
      */
     abstract fun requestInitialState(node: Node)
 
