@@ -17,13 +17,15 @@ import node.CrdtNode
 import node.Node
 import java.io.File
 import java.util.*
+import kotlin.collections.HashSet
 
 
 class VerticleNode : AbstractVerticle() {
 
     companion object {
+        const val ALLOW_UNKNOWN_NODES = false
         const val DEFAULT_NODES_PATH = "nodes.txt"
-        const val PORT = 10390
+        const val PORT = 10352
 
         const val CLIENT_CONNECT_TIMEOUT = 7500
         const val CLIENT_RECONNECT_INTERVAL = 5000L
@@ -51,9 +53,13 @@ class VerticleNode : AbstractVerticle() {
     override fun init(vertx: Vertx?, context: Context?) {
         super.init(vertx, context)
 
+        for (arg in context!!.processArgs()) {
+            println(arg)
+        }
+
         initServer(vertx!!)
         for (to in readNodesFromFile(DEFAULT_NODES_PATH)) {
-            addClient(vertx, to)
+            if (to != myNode) addClient(vertx, to)
         }
     }
 
@@ -113,7 +119,7 @@ class VerticleNode : AbstractVerticle() {
     // This handler is called whenever a new TCP connection is created by another myNode
     private fun onNewNodeConnected(serverSocket: NetSocket) {
         val node = Node(serverSocket.remoteAddress().host(), serverSocket.remoteAddress().port())
-        if (nodes.containsKey(node)) {
+        if (ALLOW_UNKNOWN_NODES || nodes.containsKey(node)) {
             serverSocket.handler({ buffer -> onMessageReceived(serverSocket, buffer) })
         } else {
             serverSocket.close()
@@ -127,23 +133,20 @@ class VerticleNode : AbstractVerticle() {
             when (msg.type) {
                 MessageType.REQUEST_STATE -> {
                     if (crdt.getState() != null) {
-                        // TODO: test it
-                        // TODO: does it work?
+                        // TODO: test CRDT state mapping
                         socket.write(VerticleMessage(MessageType.RESPONSE_STATE, JsonObject.mapFrom(crdt.getState()).encode())
                                 .toJson().encode())
                     }
                 }
                 MessageType.RESPONSE_STATE -> {
-                    // TODO: test it
                     if (!crdt.isInitialized() && msg.data != null) {
-                        val state = parseState<Int>(msg.data)
+                        val state = parseState(msg.data)
                         if (state != null) crdt.setInitialState(state)
                     }
                 }
                 MessageType.SEND_OPERATION -> {
-                    // TODO: test it
                     if (crdt.isInitialized() && msg.data != null) {
-                        val op = parseOperation<Int>(msg.data)
+                        val op = parseOperation(msg.data)
                         if (op != null) crdt.applyOperation(op)
                     }
                 }
@@ -158,8 +161,8 @@ class VerticleNode : AbstractVerticle() {
 }
 
 
-private fun readNodesFromFile(path: String): List<Node> {
-    val list = ArrayList<Node>()
+private fun readNodesFromFile(path: String): MutableSet<Node> {
+    val list = HashSet<Node>()
     val file = File(path)
     try {
         if (file.isFile && file.canRead()) {
